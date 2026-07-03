@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>17Chills • Official Music Shop | Afro-Soul from Gulu, Uganda</title>
+  <meta name="description" content="Stream and buy authentic Afro-soul & Afrobeat music from 17Chills. Support independent Ugandan artist from Gulu. Secure Mobile Money & Card payments.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&amp;family=Unbounded:wght@700;900&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Professional Sticky Navigation -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <div class="nav-brand" onclick="goToPage('home')">
+        <span class="logo-text">17CHILLS</span>
+        <span class="logo-sub">Gulu • Uganda</span>
+      </div>
+      
+      <div class="nav-links">
+        <button class="nav-btn active" data-page="home">Home</button>
+        <button class="nav-btn" data-page="catalog">Music</button>
+        <button class="nav-btn" data-page="merch">Merch</button>
+        <button class="nav-btn" data-page="library">My Library</button>
+      </div>
+
+      <div class="nav-actions">
+        <button id="admin-login-btn" class="ghost-btn" title="Artist Login">Artist</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ==================== HOME PAGE ==================== -->
+  <div id="page-home" class="page">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">FROM GULU, UGANDA TO THE WORLD</div>
+        <h1 class="hero-title display">17CHILLS</h1>
+        <p class="hero-copy" id="hero-bio">
+          Sounds from the North — blending Acholi rhythm with modern production. 
+          17Chills brings the raw soul, stories, and energy of Gulu to listeners worldwide.
+        </p>
+        
+        <div class="hero-actions">
+          <button class="btn-primary" id="listen-btn">
+            <span>Listen to the Catalog</span>
+          </button>
+          <button class="btn-secondary" onclick="goToPage('merch')">Shop Merch</button>
+        </div>
+        
+        <div class="hero-trust">
+          <div class="trust-item">✓ Secure Mobile Money &amp; Cards</div>
+          <div class="trust-item">✓ Instant Downloads</div>
+          <div class="trust-item">✓ Support Independent Art</div>
+        </div>
+      </div>
+
+      <!-- Animated Vinyl -->
+      <div class="vinyl-wrap">
+        <div class="vinyl-disc" id="vinyl-disc">
+          <div class="vinyl-groove"></div>
+          <div class="vinyl-label">
+            <span class="vinyl-text">17</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Contact / Trust Bar -->
+    <section class="contact-bar">
+      <div class="contact-bar-inner">
+        <a href="#" id="contact-phone" class="contact-quick">+256 700 000 000</a>
+        <a href="#" id="contact-phone2" class="contact-quick">+256 701 234 567 (WhatsApp)</a>
+        <a href="#" id="contact-email" class="contact-quick">booking@17chills.com</a>
+      </div>
+    </section>
+
+    <!-- About / Story -->
+    <section class="about-section">
+      <div class="section-header">
+        <span class="eyebrow small">THE STORY</span>
+        <h2 class="section-title">Music Rooted in Northern Uganda</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p id="about-bio">17Chills is more than music — it's a movement. Born in the heart of Gulu, Acholi land, the sound fuses traditional rhythms with contemporary production to create something timeless yet fresh. Every track carries stories of love, resilience, community, and the vibrant spirit of the North.</p>
+          <p>Whether you're discovering Afro-soul for the first time or a longtime fan of Ugandan music, 17Chills invites you to feel the heartbeat of a new generation.</p>
+        </div>
+        <div class="about-stats">
+          <div class="stat">
+            <div class="stat-number">2+</div>
+            <div class="stat-label">Tracks Released</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">1000+</div>
+            <div class="stat-label">Streams &amp; Downloads</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">∞</div>
+            <div class="stat-label">Passion for the Craft</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+      <div class="section-header center">
+        <span class="eyebrow small">LOVED BY FANS</span>
+        <h2 class="section-title">What Listeners Say</h2>
+      </div>
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <p class="quote">"Gulu Nights gave me chills. The production is world-class and the emotion is so real. Proud to support Ugandan talent!"</p>
+          <div class="quote-author">— Sarah K., Kampala</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="quote">"Home Ground is my morning anthem. Bought it immediately after the preview. The download was instant and the quality is perfect."</p>
+          <div class="quote-author">— Michael O., London</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="quote">"Finally an artist representing the North with this level of excellence. The merch is fire too — wearing my T-shirt everywhere."</p>
+          <div class="quote-author">— Achieng P., Gulu</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== MUSIC CATALOG ==================== -->
+  <div id="page-catalog" class="page hidden">
+    <div class="section-header">
+      <span class="eyebrow small">DISCOVER THE SOUND</span>
+      <h2 class="section-title">Music Catalog</h2>
+      <p class="section-sub">Play free previews. Buy to own the full track forever. All payments secure via Pesapal.</p>
+    </div>
+
+    <!-- Search + Filters + Sort -->
+    <div class="catalog-controls">
+      <div class="search-wrap">
+        <input type="text" id="catalog-search" placeholder="Search tracks by title or genre..." class="input-field">
+      </div>
+      
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">Genre</span>
+          <div id="genre-filters" class="chip-group"></div>
+        </div>
+        
+        <div class="filter-group">
+          <span class="filter-label">Sort</span>
+          <select id="catalog-sort" class="input-field sort-select">
+            <option value="newest">Newest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="title">Title A-Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="catalog-grid" class="catalog-grid"></div>
+    
+    <div class="catalog-note">
+      <p>🔒 Downloads are protected. Enter the phone number you used to pay and tap Download anytime.</p>
+    </div>
+  </div>
+
+  <!-- ==================== MERCH ==================== -->
+  <div id="page-merch" class="page hidden">
+    <div class="section-header">
+      <span class="eyebrow small">WEAR THE VIBE</span>
+      <h2 class="section-title">Official Merch</h2>
+      <p class="section-sub">Limited drops. High quality. Every purchase supports the music directly.</p>
+    </div>
+
+    <div class="catalog-controls">
+      <div class="search-wrap">
+        <input type="text" id="merch-search" placeholder="Search merch..." class="input-field">
+      </div>
+      <div class="filter-row">
+        <div class="filter-group">
+          <span class="filter-label">Sort</span>
+          <select id="merch-sort" class="input-field sort-select">
+            <option value="newest">Newest First</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="name">Name A-Z</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="merch-grid" class="merch-grid"></div>
+    
+    <div class="merch-note">
+      <p>📦 Physical items are fulfilled personally by the artist. You'll receive tracking or pickup details after purchase.</p>
+    </div>
+  </div>
+
+  <!-- ==================== MY LIBRARY (FAN PURCHASES) ==================== -->
+  <div id="page-library" class="page hidden">
+    <div class="section-header">
+      <span class="eyebrow small">YOUR COLLECTION</span>
+      <h2 class="section-title">My Library</h2>
+      <p class="section-sub">Enter the Mobile Money number you used to buy — see everything you own and download instantly.</p>
+    </div>
+
+    <div class="library-controls">
+      <div class="library-input-group">
+        <input type="tel" id="library-phone" placeholder="Your Mobile Money number (e.g. 0700...)" class="input-field">
+        <button class="btn-primary" id="library-load-btn">Load My Purchases</button>
+      </div>
+      <p class="library-hint">Your purchases are securely stored on our servers and linked to your phone number.</p>
+    </div>
+
+    <div id="library-results" class="library-results hidden">
+      <h3 class="library-subtitle">Your Owned Tracks</h3>
+      <div id="library-tracks" class="catalog-grid"></div>
+      
+      <h3 class="library-subtitle" style="margin-top: 40px;">Your Merch Orders</h3>
+      <div id="library-merch" class="merch-grid"></div>
+    </div>
+    
+    <div id="library-empty" class="library-empty">
+      <p>No purchases found yet for this number. Buy something from the Music or Merch pages to get started!</p>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN PANEL ==================== -->
+  <div id="admin-panel" class="admin-panel hidden">
+    <div class="admin-header">
+      <h2 class="admin-title">🎤 Artist Dashboard</h2>
+      <div>
+        <button id="exit-admin-btn" class="ghost-btn">Exit Admin</button>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <!-- Add Track -->
+      <div class="admin-card">
+        <h3 class="admin-card-title">Upload New Track</h3>
+        <form id="add-track-form" class="admin-form">
+          <label class="field-label">Track Title</label>
+          <input type="text" id="new-track-title" class="input-field" placeholder="e.g. Northern Lights" required>
+
+          <label class="field-label">Genre</label>
+          <input type="text" id="new-track-genre" class="input-field" placeholder="Afro-soul">
+
+          <label class="field-label">Description</label>
+          <textarea id="new-track-desc" class="input-field textarea" rows="2" placeholder="Short story behind the track"></textarea>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label class="field-label">Price (UGX)</label>
+              <input type="number" id="new-track-price" class="input-field" value="3000">
+            </div>
+            <div style="flex:1">
+              <label class="field-label">Cover Color</label>
+              <div id="color-swatches" class="color-swatches"></div>
+            </div>
+          </div>
+
+          <label class="field-label">Cover Photo (optional)</label>
+          <input type="file" id="new-track-cover-file" class="input-field" accept="image/*">
+
+          <label class="field-label">Song File (MP3)</label>
+          <input type="file" id="new-track-audio-file" class="input-field" accept="audio/mpeg">
+
+          <button type="button" id="add-track-btn" class="btn-primary full">Add to Catalog</button>
+        </form>
+      </div>
+
+      <!-- Add Merch -->
+      <div class="admin-card">
+        <h3 class="admin-card-title">Add Merch Item</h3>
+        <form class="admin-form">
+          <label class="field-label">Item Name</label>
+          <input type="text" id="new-merch-name" class="input-field" placeholder="Signature Hoodie" required>
+
+          <label class="field-label">Price (UGX)</label>
+          <input type="number" id="new-merch-price" class="input-field" value="45000">
+
+          <label class="field-label">Photo (optional)</label>
+          <input type="file" id="new-merch-image-file" class="input-field" accept="image/*">
+
+          <button type="button" id="add-merch-btn" class="btn-primary full">Add Merch Item</button>
+        </form>
+      </div>
+
+      <!-- Bio & Contact Settings -->
+      <div class="admin-card full-width">
+        <h3 class="admin-card-title">Edit Bio, Contact &amp; Social Links</h3>
+        <div class="admin-form settings-form">
+          <div class="form-row">
+            <div style="flex:1">
+              <label class="field-label">Primary Phone</label>
+              <input type="text" id="settings-phone" class="input-field">
+            </div>
+            <div style="flex:1">
+              <label class="field-label">Secondary Phone / WhatsApp</label>
+              <input type="text" id="settings-phone2" class="input-field">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div style="flex:1">
+              <label class="field-label">Email</label>
+              <input type="email" id="settings-email" class="input-field">
+            </div>
+            <div style="flex:1">
+              <label class="field-label">TikTok</label>
+              <input type="url" id="settings-tiktok" class="input-field" placeholder="https://tiktok.com/@17chills">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div style="flex:1"><label class="field-label">Instagram</label><input type="url" id="settings-instagram" class="input-field"></div>
+            <div style="flex:1"><label class="field-label">X / Twitter</label><input type="url" id="settings-twitter" class="input-field"></div>
+          </div>
+          <div class="form-row">
+            <div style="flex:1"><label class="field-label">Facebook</label><input type="url" id="settings-facebook" class="input-field"></div>
+            <div style="flex:1"><label class="field-label">YouTube</label><input type="url" id="settings-youtube" class="input-field"></div>
+          </div>
+
+          <label class="field-label">Artist Biography (shown on homepage)</label>
+          <textarea id="settings-bio" class="input-field textarea" rows="5" placeholder="Write your story..."></textarea>
+
+          <button type="button" id="save-settings-btn" class="btn-primary full">Save Bio &amp; Contact Info</button>
+        </div>
+      </div>
+
+      <!-- Change Password + Bulk + Sales -->
+      <div class="admin-card">
+        <h3 class="admin-card-title">Change Password</h3>
+        <div class="admin-form">
+          <input type="password" id="new-password-input" class="input-field" placeholder="New password (min 4 chars)">
+          <button id="change-password-btn" class="btn-primary full">Update Password</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3 class="admin-card-title">Bulk Price Update</h3>
+        <div class="bulk-row">
+          <select id="bulk-mode" class="input-field bulk-select">
+            <option value="percent-off">Reduce all by %</option>
+            <option value="percent-up">Increase all by %</option>
+            <option value="set-all">Set all to fixed amount</option>
+          </select>
+          <input type="number" id="bulk-value" class="input-field bulk-value" placeholder="Value">
+          <button id="bulk-apply-btn" class="btn-primary">Apply</button>
+        </div>
+        <p class="admin-note">This instantly updates every track price across the live site.</p>
+      </div>
+
+      <div class="admin-card full-width">
+        <h3 class="admin-card-title">Sales History <span style="font-size:12px;opacity:0.6">(paid orders only)</span></h3>
+        <div id="sales-history" class="sales-history"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+  
+  <!-- Checkout Modal -->
+  <div id="checkout-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Complete Your Purchase</h3>
+        <button id="checkout-close" class="icon-btn">×</button>
+      </div>
+      
+      <p id="checkout-title" class="modal-price"></p>
+      <p id="checkout-price" class="modal-price" style="font-size:28px;margin-top:-8px"></p>
+      
+      <div class="payment-methods">
+        <div class="pm-badge">MTN MoMo</div>
+        <div class="pm-badge">Airtel Money</div>
+        <div class="pm-badge">Visa / Mastercard</div>
+        <div class="pm-badge">Bank Transfer</div>
+      </div>
+      <p class="modal-note">Secure checkout powered by Pesapal • All popular payment methods supported</p>
+
+      <label class="field-label">Mobile Money Number (MTN or Airtel)</label>
+      <input type="tel" id="checkout-phone" class="input-field" placeholder="0700 000 000">
+
+      <button id="checkout-pay-btn" class="btn-primary full">Pay Securely with Mobile Money / Card</button>
+      <p id="checkout-status" class="pin-error"></p>
+    </div>
+  </div>
+
+  <!-- Edit Track Modal -->
+  <div id="edit-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Track</h3>
+        <button id="edit-close" class="icon-btn">×</button>
+      </div>
+      <input type="text" id="edit-track-title" class="input-field">
+      <input type="text" id="edit-track-genre" class="input-field">
+      <textarea id="edit-track-desc" class="input-field textarea" rows="2"></textarea>
+      <div class="form-row">
+        <input type="number" id="edit-track-price" class="input-field">
+        <div id="edit-color-swatches" class="color-swatches"></div>
+      </div>
+      <label class="field-label">Replace Cover Photo</label>
+      <input type="file" id="edit-track-cover-file" class="input-field" accept="image/*">
+      <label class="field-label">Replace Audio File</label>
+      <input type="file" id="edit-track-audio-file" class="input-field" accept="audio/mpeg">
+      <button id="edit-save-btn" class="btn-primary full">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Edit Merch Modal -->
+  <div id="edit-merch-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Merch Item</h3>
+        <button id="edit-merch-close" class="icon-btn">×</button>
+      </div>
+      <input type="text" id="edit-merch-name" class="input-field">
+      <input type="number" id="edit-merch-price" class="input-field">
+      <label class="field-label">Replace Photo</label>
+      <input type="file" id="edit-merch-image-file" class="input-field" accept="image/*">
+      <button id="edit-merch-save-btn" class="btn-primary full">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Confirm Delete Modal -->
+  <div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-card narrow">
+      <p id="confirm-message" style="margin-bottom:24px"></p>
+      <div class="confirm-row">
+        <button id="confirm-cancel-btn" class="btn-secondary">Cancel</button>
+        <button id="confirm-delete-btn" class="btn-danger">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Artist Login Modal -->
+  <div id="login-modal" class="modal-overlay hidden">
+    <div class="modal-card narrow">
+      <div class="modal-header">
+        <h3 class="modal-title">Artist Login</h3>
+        <button id="login-close" class="icon-btn">×</button>
+      </div>
+      <input type="password" id="pin-input" class="input-field" placeholder="Enter admin password">
+      <p id="pin-error" class="pin-error hidden">Wrong password.</p>
+      <button id="pin-submit-btn" class="btn-primary full">Enter Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>© <span id="footer-year"></span> 17Chills. Music lives here. Made with ❤️ in Gulu, Uganda.</p>
+      <button id="footer-dot" class="footer-dot" title="Artist access">•</button>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

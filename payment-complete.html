@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Complete • 17Chills</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600&amp;family=Unbounded:wght@700&amp;display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Space Grotesk', system_ui, sans-serif; background: #16130F; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; }
+    .card { background: #201A14; border: 1px solid #3A3226; border-radius: 24px; padding: 48px 40px; max-width: 420px; }
+    .logo { font-family: 'Unbounded', sans-serif; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    h1 { font-size: 24px; margin: 16px 0 8px; }
+    p { opacity: .85; line-height: 1.6; }
+    .btn { display: inline-block; margin-top: 24px; background: #A855F7; color: #16130F; text-decoration: none; padding: 14px 32px; border-radius: 999px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">17CHILLS</div>
+    <h1>Thank you! 🎉</h1>
+    <p>We're confirming your payment with Pesapal.<br>This usually takes just a few seconds.</p>
+    <p style="margin-top:24px;font-size:13px">You will be redirected automatically.<br>If not, <a href="index.html" style="color:#C084FC">click here to return to the site</a>.</p>
+    <a href="index.html?paid=1" class="btn">Back to 17Chills</a>
+  </div>
+
+  <script>
+    // Auto redirect after short delay with success flag
+    setTimeout(() => {
+      const params = new URLSearchParams(window.location.search);
+      const itemId = params.get("itemId") || "";
+      window.location.href = "index.html?paid=1&itemId=" + encodeURIComponent(itemId);
+    }, 4200);
+  </script>
+</body>
+</html>
