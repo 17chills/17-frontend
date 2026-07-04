@@ -797,16 +797,37 @@ async function renderSalesHistory() {
   }
 }
 
-// Confirm modal
+
+// Confirm modal - SAFE VERSION
 function openConfirm(message, onConfirm) {
-  document.getElementById("confirm-message").textContent = message;
+  const msgEl = document.getElementById("confirm-message");
+  if (msgEl) msgEl.textContent = message;
   confirmAction = onConfirm;
-  document.getElementById("confirm-modal").classList.remove("hidden");
+  const modal = document.getElementById("confirm-modal");
+  if (modal) modal.classList.remove("hidden");
 }
-document.getElementById("confirm-close").addEventListener("click", closeConfirm);
-document.getElementById("confirm-cancel-btn").addEventListener("click", closeConfirm);
-function closeConfirm() { document.getElementById("confirm-modal").classList.add("hidden"); confirmAction = null; }
-document.getElementById("confirm-delete-btn").addEventListener("click", () => { if (confirmAction) confirmAction(); closeConfirm(); });
+
+function closeConfirm() {
+  const modal = document.getElementById("confirm-modal");
+  if (modal) modal.classList.add("hidden");
+  confirmAction = null;
+}
+
+function setupConfirmModalListeners() {
+  const closeBtn = document.getElementById("confirm-close");
+  const cancelBtn = document.getElementById("confirm-cancel-btn");
+  const deleteBtn = document.getElementById("confirm-delete-btn");
+
+  if (closeBtn) closeBtn.addEventListener("click", closeConfirm);
+  if (cancelBtn) cancelBtn.addEventListener("click", closeConfirm);
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", () => {
+      if (confirmAction) confirmAction();
+      closeConfirm();
+    });
+  }
+}
+
 
 // Icons
 function iconPlay() { return `<svg class="icon small" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`; }
