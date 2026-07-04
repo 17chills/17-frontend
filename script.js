@@ -193,27 +193,32 @@ function renderCatalog(filteredTracks = null) {
       ? `background-image:url(${API_BASE + track.coverImageUrl}); background-size:cover; background-position:center;`
       : `background:${track.coverColor}`;
 
-    card.innerHTML = `
-      <div class="track-cover" style="${coverStyle}"></div>
-      <div class="track-info">
-        ${track.featured ? `<span class="badge badge-featured">Featured</span>` : ""}
-        ${soldOut ? `<span class="badge badge-soldout">Sold out</span>` : ""}
-        <p class="track-title">${escapeHtml(track.title)}</p>
-        <p class="track-meta">${escapeHtml(track.genre || "—")} · ${formatUGX(track.price)}</p>
-        \( {track.description ? `<p class="track-desc"> \){escapeHtml(track.description)}</p>` : ""}
-        <div class="track-actions">
-          <button class="icon-btn play-btn" title="Play preview">${isPlaying ? iconPause() : iconPlay()}</button>
-          ${owned
-            ? `<button class="download-btn dl-btn" title="Download full track">${iconDownload()}</button>`
-            : soldOut
-              ? `<span class="sale-empty">Not available</span>`
-              : `<button class="buy-btn buy-track-btn">${iconCart()} Buy</button>`
-          }
-          \( {adminToken ? `<button class="icon-btn edit-track-btn" title="Edit"> \){iconEdit()}</button>` : ""}
-          \( {adminToken ? `<button class="remove-btn remove-track-btn" title="Remove"> \){iconX()}</button>` : ""}
-        </div>
-      </div>
-    `;
+card.innerHTML = `
+  <div class="track-cover" style="${coverStyle}"></div>
+  <div class="track-info">
+    ${track.featured ? `<span class="badge badge-featured">Featured</span>` : ""}
+    ${soldOut ? `<span class="badge badge-soldout">Sold out</span>` : ""}
+    <p class="track-title">${escapeHtml(track.title)}</p>
+    <p class="track-meta">${escapeHtml(track.genre || "—")} · ${formatUGX(track.price)}</p>
+    \( {track.description ? `<p class="track-desc"> \){escapeHtml(track.description)}</p>` : ""}
+
+    <div class="track-actions">
+      <button class="icon-btn play-btn" title="Play preview">
+        ${isPlaying ? iconPause() : iconPlay()}
+      </button>
+
+      ${owned 
+        ? `<button class="download-btn dl-btn" title="Download full track">${iconDownload()}</button>` 
+        : soldOut 
+          ? `<span class="sale-empty">Not available</span>` 
+          : `<button class="buy-btn buy-track-btn">${iconCart()} Buy</button>`
+      }
+
+      \( {adminToken ? `<button class="icon-btn edit-track-btn" title="Edit"> \){iconEdit()}</button>` : ""}
+      \( {adminToken ? `<button class="remove-btn remove-track-btn" title="Remove"> \){iconX()}</button>` : ""}
+    </div>
+  </div>
+`;
 
     // Event listeners
     const playBtn = card.querySelector(".play-btn");
