@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE_URL || "http://localhost:4000";
+const API_BASE = window.API_BASE_URL || "http://one7-backend.onrender.com";
 const SWATCH_COLORS = ["#A855F7", "#D946EF", "#7C3AED", "#6D28D9"];
 
 // State
