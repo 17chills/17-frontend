@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>17Chills • Official Music Shop | Afro-Soul from Gulu, Uganda</title>
   <meta name="description" content="Stream and buy authentic Afro-soul & Afrobeat music from 17Chills. Support independent Ugandan artist from Gulu. Secure Mobile Money & Card payments.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%23A855F7'/%3E%3Ctext x='50' y='64' font-size='40' font-family='sans-serif' font-weight='900' fill='%2316130F' text-anchor='middle'%3E17%3C/text%3E%3C/svg%3E">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="17Chills • Official Music Shop | Afro-Soul from Gulu, Uganda">
+  <meta property="og:description" content="Stream and buy authentic Afro-soul & Afrobeat music from 17Chills. Support independent Ugandan artist from Gulu.">
+  <meta property="og:site_name" content="17Chills">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="17Chills • Official Music Shop">
+  <meta name="twitter:description" content="Stream and buy authentic Afro-soul & Afrobeat music from 17Chills, straight from Gulu, Uganda.">
+  <meta name="theme-color" content="#16130F">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&amp;family=Unbounded:wght@700;900&amp;display=swap" rel="stylesheet">
@@ -19,15 +28,19 @@
         <span class="logo-sub">Gulu • Uganda</span>
       </div>
       
-      <div class="nav-links">
+      <div class="nav-links" id="nav-links">
         <button class="nav-btn active" data-page="home">Home</button>
         <button class="nav-btn" data-page="catalog">Music</button>
         <button class="nav-btn" data-page="merch">Merch</button>
+        <button class="nav-btn" data-page="tour">Tour</button>
         <button class="nav-btn" data-page="library">My Library</button>
       </div>
 
       <div class="nav-actions">
         <button id="admin-login-btn" class="ghost-btn" title="Artist Login">Artist</button>
+        <button id="nav-hamburger" class="hamburger-btn" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </nav>
@@ -130,9 +143,40 @@
         </div>
       </div>
     </section>
+    <!-- Music Videos -->
+    <section class="videos-section">
+      <div class="section-header center">
+        <span class="eyebrow small">WATCH</span>
+        <h2 class="section-title">Music Videos</h2>
+      </div>
+      <div id="videos-grid" class="videos-grid"></div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter-section">
+      <div class="newsletter-card">
+        <h2 class="section-title" style="margin-top:0">Join the Mailing List</h2>
+        <p class="section-sub" style="margin-bottom:20px">Get notified the moment new music, merch drops, or tour dates go live.</p>
+        <div class="newsletter-form">
+          <input type="email" id="newsletter-email" class="input-field" placeholder="you@example.com">
+          <button id="newsletter-btn" class="btn-primary">Subscribe</button>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- ==================== MUSIC CATALOG ==================== -->
+  <!-- ==================== TOUR / SHOWS ==================== -->
+  <div id="page-tour" class="page hidden">
+    <div class="section-header">
+      <span class="eyebrow small">ON THE ROAD</span>
+      <h2 class="section-title">Upcoming Shows</h2>
+      <p class="section-sub">Catch 17Chills live. Tickets and details below.</p>
+    </div>
+    <div id="tour-list" class="tour-list"></div>
+    <div id="tour-empty" class="library-empty hidden">
+      <p>No shows scheduled right now — check back soon!</p>
+    </div>
+  </div>
   <div id="page-catalog" class="page hidden">
     <div class="section-header">
       <span class="eyebrow small">DISCOVER THE SOUND</span>
@@ -362,6 +406,48 @@
         <h3 class="admin-card-title">Sales History <span style="font-size:12px;opacity:0.6">(paid orders only)</span></h3>
         <div id="sales-history" class="sales-history"></div>
       </div>
+
+      <!-- Manage Tour Dates -->
+      <div class="admin-card">
+        <h3 class="admin-card-title">Add Tour Date</h3>
+        <form class="admin-form">
+          <label class="field-label">Show / Tour Title</label>
+          <input type="text" id="new-event-title" class="input-field" placeholder="e.g. Gulu Homecoming Show">
+          <div class="form-row">
+            <div style="flex:1">
+              <label class="field-label">Venue</label>
+              <input type="text" id="new-event-venue" class="input-field" placeholder="Acholi Grounds">
+            </div>
+            <div style="flex:1">
+              <label class="field-label">City</label>
+              <input type="text" id="new-event-city" class="input-field" placeholder="Gulu, Uganda">
+            </div>
+          </div>
+          <label class="field-label">Date &amp; Time</label>
+          <input type="datetime-local" id="new-event-date" class="input-field">
+          <label class="field-label">Ticket Link (optional)</label>
+          <input type="url" id="new-event-ticket" class="input-field" placeholder="https://...">
+          <button type="button" id="add-event-btn" class="btn-primary full">Add Show</button>
+        </form>
+      </div>
+
+      <!-- Manage Videos -->
+      <div class="admin-card">
+        <h3 class="admin-card-title">Add Music Video</h3>
+        <form class="admin-form">
+          <label class="field-label">Video Title</label>
+          <input type="text" id="new-video-title" class="input-field" placeholder="e.g. Gulu Nights (Official Video)">
+          <label class="field-label">YouTube Link</label>
+          <input type="url" id="new-video-url" class="input-field" placeholder="https://youtube.com/watch?v=...">
+          <button type="button" id="add-video-btn" class="btn-primary full">Add Video</button>
+        </form>
+      </div>
+
+      <!-- Newsletter Subscribers -->
+      <div class="admin-card full-width">
+        <h3 class="admin-card-title">Newsletter Subscribers <span id="subscriber-count" style="font-size:12px;opacity:0.6"></span></h3>
+        <div id="subscribers-list" class="sales-history"></div>
+      </div>
     </div>
   </div>
 
@@ -462,11 +548,26 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-inner">
+      <div id="footer-socials" class="footer-socials"></div>
       <p>© <span id="footer-year"></span> 17Chills. Music lives here. Made with ❤️ in Gulu, Uganda.</p>
       <button id="footer-dot" class="footer-dot" title="Artist access">•</button>
     </div>
   </footer>
 
+  <!-- Now Playing Mini Player -->
+  <div id="mini-player" class="mini-player hidden">
+    <div class="mini-player-inner">
+      <div class="mini-player-cover" id="mini-player-cover"></div>
+      <div class="mini-player-info">
+        <p class="mini-player-title" id="mini-player-title"></p>
+        <p class="mini-player-sub">Preview</p>
+      </div>
+      <button id="mini-player-toggle" class="icon-btn"></button>
+      <button id="mini-player-close" class="icon-btn">×</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
