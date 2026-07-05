@@ -1,4 +1,4 @@
-const API_BASE = window.API_BASE_URL || "http://one7-backend.onrender.com";
+const API_BASE = window.API_BASE_URL || "http://localhost:4000";
 const SWATCH_COLORS = ["#A855F7", "#D946EF", "#7C3AED", "#6D28D9"];
 
 // State
@@ -109,6 +109,19 @@ function renderHeroBio() {
     if (heroBio) heroBio.textContent = settings.bio.split(". ").slice(0, 2).join(". ") + ".";
     if (aboutBio) aboutBio.textContent = settings.bio;
   }
+}
+
+// Download a purchased track
+function downloadTrack(track) {
+  if (!track.streamUrl) { showToast("No audio file available for this track yet."); return; }
+  const a = document.createElement("a");
+  a.href = API_BASE + track.streamUrl;
+  a.download = (track.title || "track") + ".mp3";
+  a.target = "_blank";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast(`Downloading "${track.title}"...`);
 }
 
 // Preview audio
@@ -797,37 +810,16 @@ async function renderSalesHistory() {
   }
 }
 
-
-// Confirm modal - SAFE VERSION
+// Confirm modal
 function openConfirm(message, onConfirm) {
-  const msgEl = document.getElementById("confirm-message");
-  if (msgEl) msgEl.textContent = message;
+  document.getElementById("confirm-message").textContent = message;
   confirmAction = onConfirm;
-  const modal = document.getElementById("confirm-modal");
-  if (modal) modal.classList.remove("hidden");
+  document.getElementById("confirm-modal").classList.remove("hidden");
 }
-
-function closeConfirm() {
-  const modal = document.getElementById("confirm-modal");
-  if (modal) modal.classList.add("hidden");
-  confirmAction = null;
-}
-
-function setupConfirmModalListeners() {
-  const closeBtn = document.getElementById("confirm-close");
-  const cancelBtn = document.getElementById("confirm-cancel-btn");
-  const deleteBtn = document.getElementById("confirm-delete-btn");
-
-  if (closeBtn) closeBtn.addEventListener("click", closeConfirm);
-  if (cancelBtn) cancelBtn.addEventListener("click", closeConfirm);
-  if (deleteBtn) {
-    deleteBtn.addEventListener("click", () => {
-      if (confirmAction) confirmAction();
-      closeConfirm();
-    });
-  }
-}
-
+document.getElementById("confirm-close").addEventListener("click", closeConfirm);
+document.getElementById("confirm-cancel-btn").addEventListener("click", closeConfirm);
+function closeConfirm() { document.getElementById("confirm-modal").classList.add("hidden"); confirmAction = null; }
+document.getElementById("confirm-delete-btn").addEventListener("click", () => { if (confirmAction) confirmAction(); closeConfirm(); });
 
 // Icons
 function iconPlay() { return `<svg class="icon small" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>`; }
