@@ -485,42 +485,38 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
   }
 });
 
-// Return from payment redirect
-// We now take a more reliable approach: after payment, automatically send the user
-// to "My Library" (pre-filled with their phone) so they can download immediately.
-// This works even if Pesapal/backend doesn't pass perfect ?paid=1&itemId params.
+// Return from payment redirect - Simple experience: update button on current page
 async function handlePaymentReturn() {
   const params = new URLSearchParams(window.location.search);
   const paid = params.get("paid");
   const itemId = params.get("itemId");
+  const itemType = params.get("itemType") || "track";
+
   const hasPaymentSignal = paid === "1" || params.has("OrderTrackingId") || params.has("pesapal");
 
   if (hasPaymentSignal) {
+    // Mark as purchased locally so UI updates immediately
     if (itemId) {
       purchased[itemId] = true;
       savePurchasedCache();
     }
 
-    // Clean ugly params from URL
+    // Clean the URL
     window.history.replaceState({}, "", window.location.pathname);
 
-    showToast("Payment successful! Taking you to My Library to download your music...");
+    showToast("Payment successful! Thank you. Your download is now available.");
 
-    // Ensure we have the latest tracks/merch data before checking ownership
+    // Refresh data and re-render current page so button changes from Buy → Download
     await loadEverything();
 
-    // Give the toast a moment, then go to Library and auto-load
-    setTimeout(() => {
-      goToPage("library");
-
+    // If user is on catalog or merch page, it will already show updated buttons.
+    // If they're somewhere else, gently suggest going to Music.
+    const currentPage = document.querySelector(".page:not(.hidden)");
+    if (currentPage && currentPage.id !== "page-catalog" && currentPage.id !== "page-merch") {
       setTimeout(() => {
-        const phoneInput = document.getElementById("library-phone");
-        if (phoneInput && fanPhone) {
-          phoneInput.value = fanPhone;
-        }
-        loadMyLibrary();
-      }, 350);
-    }, 900);
+        showToast("Go to Music page to download your track.");
+      }, 2500);
+    }
 
     return true;
   }
@@ -543,41 +539,83 @@ async function loadMyLibrary() {
   const empty = document.getElementById("library-empty");
   const tracksWrap = document.getElementById("library-tracks");
   const merchWrap = document.getElementById("library-merch");
+  const loadBtn = document.getElementById("library-load-btn");
 
   tracksWrap.innerHTML = "";
   merchWrap.innerHTML = "";
   results.classList.add("hidden");
   empty.classList.add("hidden");
 
+  // Show loading state (important for sleeping backend)
+  const originalBtnText = loadBtn ? loadBtn.textContent : "";
+  if (loadBtn) {
+    loadBtn.disabled = true;
+    loadBtn.textContent = "Connecting to server... (free hosting can take 30-60s)";
+  }
+
   const ownedTracks = [];
   const ownedMerch = [];
+  let hasError = false;
 
-  for (const track of tracks) {
-    try {
-      const res = await apiGet(`/api/payments/owns?phone=${encodeURIComponent(phone)}&itemId=${track.id}`);
-      if (res.owns) ownedTracks.push(track);
-    } catch {}
+  try {
+    // We check each item individually. On cold start this can be slow.
+    for (const track of tracks) {
+      try {
+        const res = await apiGet(`/api/payments/owns?phone=${encodeURIComponent(phone)}&itemId=${track.id}`);
+        if (res && res.owns) ownedTracks.push(track);
+      } catch (e) {
+        hasError = true;
+      }
+    }
+    for (const item of merch) {
+      try {
+        const res = await apiGet(`/api/payments/owns?phone=${encodeURIComponent(phone)}&itemId=${item.id}`);
+        if (res && res.owns) ownedMerch.push(item);
+      } catch (e) {
+        hasError = true;
+      }
+    }
+  } catch (e) {
+    hasError = true;
   }
-  for (const item of merch) {
-    try {
-      const res = await apiGet(`/api/payments/owns?phone=${encodeURIComponent(phone)}&itemId=${item.id}`);
-      if (res.owns) ownedMerch.push(item);
-    } catch {}
+
+  // Restore button
+  if (loadBtn) {
+    loadBtn.disabled = false;
+    loadBtn.textContent = originalBtnText || "Load My Purchases";
+  }
+
+  if (hasError) {
+    // Likely the backend is still waking up
+    if (empty) {
+      empty.innerHTML = `
+        <div style="padding: 24px; text-align: center;">
+          <p style="margin-bottom: 12px; font-weight: 600;">Server is waking up...</p>
+          <p style="font-size: 0.95em; opacity: 0.9; margin-bottom: 16px;">
+            Your free backend on Render sleeps when inactive.<br>
+            This can take up to 60 seconds. Please wait a moment and click the button again.
+          </p>
+          <button onclick="loadMyLibrary()" style="padding: 10px 24px; border-radius: 999px; background: #7c3aed; color: white; border: none; font-weight: 600; cursor: pointer;">
+            Try Again
+          </button>
+        </div>
+      `;
+    }
+    empty.classList.remove("hidden");
+    return;
   }
 
   if (ownedTracks.length === 0 && ownedMerch.length === 0) {
-    // Show more helpful empty state with the exact phone being checked
-    const emptyMsg = document.getElementById("library-empty");
-    if (emptyMsg) {
-      emptyMsg.innerHTML = `
+    if (empty) {
+      empty.innerHTML = `
         <div style="padding: 20px; text-align: center;">
           <p style="margin-bottom: 12px;">No purchases found for <strong>${escapeHtml(phone)}</strong>.</p>
           <p style="font-size: 0.9em; opacity: 0.85; margin-bottom: 16px;">
-            If you just paid, please wait 30–60 seconds and click "Load My Purchases" again.<br>
-            Make sure you used the <strong>exact same phone number</strong> during checkout.
+            If you just paid successfully, wait 30–60 seconds and tap "Load My Purchases" again.<br>
+            Make sure the phone number matches exactly what you used at checkout.
           </p>
-          <button onclick="location.reload()" style="padding: 8px 20px; border-radius: 999px; background: #6b46c1; color: white; border: none; cursor: pointer;">
-            Refresh Page
+          <button onclick="loadMyLibrary()" style="padding: 10px 24px; border-radius: 999px; background: #7c3aed; color: white; border: none; font-weight: 600; cursor: pointer;">
+            Check Again
           </button>
         </div>
       `;
