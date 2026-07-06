@@ -1,6 +1,12 @@
 const API_BASE = window.API_BASE_URL || "http://one7-backend.onrender.com";
 const SWATCH_COLORS = ["#A855F7", "#D946EF", "#7C3AED", "#6D28D9"];
 
+// Helper: safely build full asset URL (supports both relative paths and already-absolute Cloudinary URLs)
+function getAssetUrl(url) {
+  if (!url) return "";
+  return url.startsWith("http") ? url : API_BASE + url;
+}
+
 // State
 let tracks = [];
 let merch = [];
@@ -57,7 +63,6 @@ function goToPage(page) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
   if (page === "library") {
-    // auto focus phone if empty
     setTimeout(() => {
       const phoneInput = document.getElementById("library-phone");
       if (phoneInput && !phoneInput.value) phoneInput.focus();
@@ -115,9 +120,8 @@ function renderHeroBio() {
 function downloadTrack(track) {
   if (!track.streamUrl) { showToast("No audio file available for this track yet."); return; }
   const a = document.createElement("a");
-  a.href = API_BASE + track.streamUrl;
+  a.href = getAssetUrl(track.streamUrl);
   a.download = (track.title || "track") + ".mp3";
-  a.target = "_blank";
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -129,16 +133,17 @@ function togglePlay(track) {
   if (playingId === track.id) { stopPlayback(); return; }
   stopPlayback();
 
- if (track.streamUrl) {
-  // Fix: Use full Cloudinary URL directly if it starts with http, otherwise prepend backend URL
-  const audioSrc = track.streamUrl.startsWith('http') 
-    ? track.streamUrl 
-    : API_BASE + track.streamUrl;
-
-  audioEl = new Audio(audioSrc);
-  audioEl.play().catch(() => showToast("Preview couldn't play."));
-  audioEl.onended = () => { playingId = null; document.getElementById("vinyl-disc").classList.remove("spinning"); renderCatalog(); };
-} else {
+  if (track.streamUrl) {
+    const audioSrc = getAssetUrl(track.streamUrl);
+    audioEl = new Audio(audioSrc);
+    audioEl.play().catch(() => showToast("Preview couldn't play."));
+    audioEl.onended = () => {
+      playingId = null;
+      const disc = document.getElementById("vinyl-disc");
+      if (disc) disc.classList.remove("spinning");
+      renderCatalog();
+    };
+  } else {
     // Fallback tone
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -151,14 +156,17 @@ function togglePlay(track) {
     setTimeout(() => { if (playingId === track.id) stopPlayback(); }, 2200);
   }
   playingId = track.id;
-  document.getElementById("vinyl-disc").classList.add("spinning");
+  const disc = document.getElementById("vinyl-disc");
+  if (disc) disc.classList.add("spinning");
   renderCatalog();
 }
+
 function stopPlayback() {
   if (audioEl) { audioEl.pause(); audioEl = null; }
   playingId = null;
   const disc = document.getElementById("vinyl-disc");
   if (disc) disc.classList.remove("spinning");
+  renderCatalog(); // ensure play/pause icons update after tone ends
 }
 
 // ========== CATALOG RENDER + FILTERS ==========
@@ -168,12 +176,10 @@ function renderCatalog(filteredTracks = null) {
 
   let list = filteredTracks || tracks;
 
-  // Apply genre filters
   if (activeGenreFilters.size > 0) {
     list = list.filter(t => activeGenreFilters.has(t.genre));
   }
 
-  // Apply search from input
   const searchTerm = (document.getElementById("catalog-search")?.value || "").toLowerCase().trim();
   if (searchTerm) {
     list = list.filter(t => 
@@ -183,13 +189,11 @@ function renderCatalog(filteredTracks = null) {
     );
   }
 
-  // Apply sort
   const sortMode = document.getElementById("catalog-sort")?.value || "newest";
   list = [...list].sort((a, b) => {
     if (sortMode === "price-low") return a.price - b.price;
     if (sortMode === "price-high") return b.price - a.price;
     if (sortMode === "title") return a.title.localeCompare(b.title);
-    // newest
     return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
   });
 
@@ -207,7 +211,8 @@ function renderCatalog(filteredTracks = null) {
     card.className = `card track-card${soldOut ? " soldout" : ""}`;
 
     const coverStyle = track.coverImageUrl 
-  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl});background-size:cover;background-position:center;`
+      ? `background-image:url(${getAssetUrl(track.coverImageUrl)});background-size:cover;background-position:center;`
+      : `background:${track.coverColor || "#1f2937"};`;
 
     card.innerHTML = `
       <div class="track-cover" style="${coverStyle}"></div>
@@ -236,7 +241,6 @@ function renderCatalog(filteredTracks = null) {
       </div>
     `;
 
-    // Event listeners
     card.querySelector(".play-btn").addEventListener("click", () => togglePlay(track));
     
     if (owned) {
@@ -286,7 +290,6 @@ function renderGenreFilters() {
   const genres = [...new Set(tracks.map(t => t.genre).filter(Boolean))];
   if (genres.length === 0) return;
 
-  // All chip
   const allChip = document.createElement("div");
   allChip.className = `chip ${activeGenreFilters.size === 0 ? "active" : ""}`;
   allChip.textContent = "All";
@@ -307,7 +310,6 @@ function renderGenreFilters() {
   });
 }
 
-// Search + sort listeners (catalog)
 function setupCatalogControls() {
   const search = document.getElementById("catalog-search");
   const sort = document.getElementById("catalog-sort");
@@ -315,7 +317,6 @@ function setupCatalogControls() {
   if (sort) sort.addEventListener("change", () => renderCatalog());
 }
 
-// Merch search + sort
 function setupMerchControls() {
   const search = document.getElementById("merch-search");
   const sort = document.getElementById("merch-sort");
@@ -349,7 +350,7 @@ function renderMerch(filtered = null) {
     card.className = "card";
 
     const thumbStyle = item.imageUrl 
-      ? `background-image:url(${API_BASE + item.imageUrl}); background-size:cover; background-position:center;` 
+      ? `background-image:url(${getAssetUrl(item.imageUrl)}); background-size:cover; background-position:center;` 
       : "";
 
     card.innerHTML = `
@@ -390,7 +391,6 @@ function renderMerch(filtered = null) {
 function renderSettings() {
   if (!settings) return;
 
-  // Contact quick bar
   const phoneEl = document.getElementById("contact-phone");
   if (phoneEl && settings.phone) {
     phoneEl.href = "tel:" + settings.phone.replace(/\s+/g, "");
@@ -409,7 +409,6 @@ function renderSettings() {
     emailEl.innerHTML = `<span>${settings.email}</span>`;
   }
 
-  // Pre-fill admin form
   const fields = ["phone", "phone2", "email", "instagram", "tiktok", "twitter", "facebook", "youtube", "bio"];
   fields.forEach(f => {
     const input = document.getElementById("settings-" + f);
@@ -475,22 +474,10 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
     fanPhone = phone;
     localStorage.setItem("17chills_fan_phone", phone);
 
-    // Small delay so user sees the message
     setTimeout(() => {
       window.location.href = result.paymentLink;
     }, 800);
 
-  } catch (e) {
-    statusEl.textContent = e.message || "Payment could not be started. Please try again.";
-    btn.disabled = false;
-    btn.textContent = "Pay Securely with Mobile Money / Card";
-  }
-});
-
-    fanPhone = phone;
-    localStorage.setItem("17chills_fan_phone", phone);
-    // Redirect to Pesapal
-    window.location.href = result.paymentLink;
   } catch (e) {
     statusEl.textContent = e.message || "Payment could not be started. Please try again.";
     btn.disabled = false;
@@ -534,7 +521,6 @@ async function loadMyLibrary() {
   results.classList.add("hidden");
   empty.classList.add("hidden");
 
-  // Check ownership for every track and merch using backend
   const ownedTracks = [];
   const ownedMerch = [];
 
@@ -558,14 +544,13 @@ async function loadMyLibrary() {
 
   results.classList.remove("hidden");
 
-  // Render owned tracks
   ownedTracks.forEach(track => {
     const card = document.createElement("div");
     card.className = "card track-card";
 
     const coverStyle = track.coverImageUrl 
-  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl}); background-size:cover; background-position:center;` 
-  : `background:${track.coverColor}`;
+      ? `background-image:url(${getAssetUrl(track.coverImageUrl)}); background-size:cover; background-position:center;` 
+      : `background:${track.coverColor || "#1f2937"}`;
     
     card.innerHTML = `
       <div class="track-cover" style="${coverStyle}"></div>
@@ -579,11 +564,12 @@ async function loadMyLibrary() {
     tracksWrap.appendChild(card);
   });
 
-  // Render owned merch
   ownedMerch.forEach(item => {
     const card = document.createElement("div");
     card.className = "card";
-    const thumbStyle = item.imageUrl ? `background-image:url(${API_BASE + item.imageUrl});background-size:cover;background-position:center;` : "";
+    const thumbStyle = item.imageUrl 
+      ? `background-image:url(${getAssetUrl(item.imageUrl)});background-size:cover;background-position:center;` 
+      : "";
     card.innerHTML = `
       <div class="merch-thumb" style="${thumbStyle}">${item.imageUrl ? "" : iconImage()}</div>
       <p class="merch-name">${escapeHtml(item.name)}</p>
@@ -626,7 +612,6 @@ document.getElementById("exit-admin-btn").addEventListener("click", () => {
   renderMerch();
 });
 
-// Change password
 document.getElementById("change-password-btn").addEventListener("click", async () => {
   const val = document.getElementById("new-password-input").value.trim();
   if (val.length < 4) { showToast("Password must be at least 4 characters"); return; }
@@ -757,7 +742,6 @@ document.getElementById("add-track-btn").addEventListener("click", async () => {
 
   try {
     await apiSend("/api/tracks", "POST", form, true);
-    // reset form
     document.getElementById("new-track-title").value = "";
     document.getElementById("new-track-genre").value = "";
     document.getElementById("new-track-desc").value = "";
@@ -789,7 +773,6 @@ document.getElementById("add-merch-btn").addEventListener("click", async () => {
   } catch (e) { showToast(e.message); }
 });
 
-// Bulk price update
 document.getElementById("bulk-apply-btn").addEventListener("click", async () => {
   const mode = document.getElementById("bulk-mode").value;
   const value = Number(document.getElementById("bulk-value").value);
@@ -814,7 +797,6 @@ function buildTrackForm(fields) {
   return form;
 }
 
-// Sales history
 async function renderSalesHistory() {
   const wrap = document.getElementById("sales-history");
   try {
@@ -835,7 +817,6 @@ async function renderSalesHistory() {
   }
 }
 
-// Confirm modal
 function openConfirm(message, onConfirm) {
   document.getElementById("confirm-message").textContent = message;
   confirmAction = onConfirm;
@@ -875,9 +856,7 @@ loadEverything().then(() => {
     document.getElementById("admin-panel").classList.remove("hidden");
     renderSalesHistory();
   }
-  // Show home by default
   document.getElementById("page-home").classList.remove("hidden");
 });
 
-// Expose some for debugging if needed
 window._17chills = { goToPage, loadEverything };
