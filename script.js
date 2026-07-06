@@ -458,10 +458,13 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
     showToast("Please enter a valid Mobile Money number");
     return;
   }
+
   const btn = document.getElementById("checkout-pay-btn");
   const statusEl = document.getElementById("checkout-status");
+
   btn.disabled = true;
-  btn.textContent = "Connecting to Pesapal...";
+  btn.textContent = "Connecting to mobile money...";
+  statusEl.textContent = "Please wait while we open the payment page...";
 
   try {
     const result = await apiSend("/api/payments/initiate", "POST", {
@@ -469,6 +472,22 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
       itemId: checkoutItem.id,
       phone,
     });
+
+    fanPhone = phone;
+    localStorage.setItem("17chills_fan_phone", phone);
+
+    // Small delay so user sees the message
+    setTimeout(() => {
+      window.location.href = result.paymentLink;
+    }, 800);
+
+  } catch (e) {
+    statusEl.textContent = e.message || "Payment could not be started. Please try again.";
+    btn.disabled = false;
+    btn.textContent = "Pay Securely with Mobile Money / Card";
+  }
+});
+
     fanPhone = phone;
     localStorage.setItem("17chills_fan_phone", phone);
     // Redirect to Pesapal
