@@ -462,7 +462,7 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
 
   btn.disabled = true;
   btn.textContent = "Connecting to mobile money...";
-  statusEl.textContent = "Please wait while we open the payment page...";
+  statusEl.textContent = "Opening secure payment page... After you complete payment, you will be brought back here and taken straight to My Library to download your music.";
 
   try {
     const result = await apiSend("/api/payments/initiate", "POST", {
@@ -485,32 +485,46 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
   }
 });
 
-// Return from payment redirect (called early so purchased state is set BEFORE first render)
+// Return from payment redirect
+// We now take a more reliable approach: after payment, automatically send the user
+// to "My Library" (pre-filled with their phone) so they can download immediately.
+// This works even if Pesapal/backend doesn't pass perfect ?paid=1&itemId params.
 async function handlePaymentReturn() {
   const params = new URLSearchParams(window.location.search);
   const paid = params.get("paid");
   const itemId = params.get("itemId");
+  const hasPaymentSignal = paid === "1" || params.has("OrderTrackingId") || params.has("pesapal");
 
-  if (paid === "1" && itemId) {
-    purchased[itemId] = true;
-    savePurchasedCache();
+  if (hasPaymentSignal) {
+    if (itemId) {
+      purchased[itemId] = true;
+      savePurchasedCache();
+    }
 
-    // Clean the URL so refresh doesn't re-trigger
+    // Clean ugly params from URL
     window.history.replaceState({}, "", window.location.pathname);
 
-    showToast("Payment confirmed! Thank you for supporting the music. You can now download your track.");
+    showToast("Payment successful! Taking you to My Library to download your music...");
 
-    // Load fresh data — this will render catalog/merch with the Download button visible immediately
-    await loadEverything();
-    renderGenreFilters();
+    // Give the toast a moment to show, then go to Library
+    setTimeout(() => {
+      goToPage("library");
 
-    if (adminToken) {
-      document.getElementById("admin-panel").classList.remove("hidden");
-      renderSalesHistory();
-    }
-    document.getElementById("page-home").classList.remove("hidden");
+      // Pre-fill phone number (already saved before payment)
+      setTimeout(() => {
+        const phoneInput = document.getElementById("library-phone");
+        if (phoneInput && fanPhone) {
+          phoneInput.value = fanPhone;
+        }
+        // Auto-load their library so downloads appear immediately
+        const loadBtn = document.getElementById("library-load-btn");
+        if (loadBtn && fanPhone) {
+          loadMyLibrary();
+        }
+      }, 400);
+    }, 1200);
 
-    return true; // signal that we handled a purchase return
+    return true;
   }
   return false;
 }
