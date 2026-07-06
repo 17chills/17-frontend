@@ -485,18 +485,34 @@ document.getElementById("checkout-pay-btn").addEventListener("click", async () =
   }
 });
 
-// Return from payment
-async function checkReturnFromPayment() {
+// Return from payment redirect (called early so purchased state is set BEFORE first render)
+async function handlePaymentReturn() {
   const params = new URLSearchParams(window.location.search);
   const paid = params.get("paid");
   const itemId = params.get("itemId");
+
   if (paid === "1" && itemId) {
     purchased[itemId] = true;
     savePurchasedCache();
-    showToast("Payment confirmed! Thank you for supporting the music.");
+
+    // Clean the URL so refresh doesn't re-trigger
     window.history.replaceState({}, "", window.location.pathname);
+
+    showToast("Payment confirmed! Thank you for supporting the music. You can now download your track.");
+
+    // Load fresh data — this will render catalog/merch with the Download button visible immediately
     await loadEverything();
+    renderGenreFilters();
+
+    if (adminToken) {
+      document.getElementById("admin-panel").classList.remove("hidden");
+      renderSalesHistory();
+    }
+    document.getElementById("page-home").classList.remove("hidden");
+
+    return true; // signal that we handled a purchase return
   }
+  return false;
 }
 
 // ========== MY LIBRARY ==========
@@ -849,14 +865,21 @@ document.getElementById("footer-dot").addEventListener("click", () => {
 renderSwatches();
 setupCatalogControls();
 setupMerchControls();
-checkReturnFromPayment();
-loadEverything().then(() => {
-  renderGenreFilters();
-  if (adminToken) {
-    document.getElementById("admin-panel").classList.remove("hidden");
-    renderSalesHistory();
+
+// Handle payment return FIRST (before any rendering) so the catalog shows "Download" immediately
+handlePaymentReturn().then((wasPaymentReturn) => {
+  if (!wasPaymentReturn) {
+    // Normal page load — fetch data and render
+    loadEverything().then(() => {
+      renderGenreFilters();
+      if (adminToken) {
+        document.getElementById("admin-panel").classList.remove("hidden");
+        renderSalesHistory();
+      }
+      document.getElementById("page-home").classList.remove("hidden");
+    });
   }
-  document.getElementById("page-home").classList.remove("hidden");
+  // If it WAS a payment return, handlePaymentReturn already did loadEverything + rendering
 });
 
 window._17chills = { goToPage, loadEverything };
