@@ -506,23 +506,21 @@ async function handlePaymentReturn() {
 
     showToast("Payment successful! Taking you to My Library to download your music...");
 
-    // Give the toast a moment to show, then go to Library
+    // Ensure we have the latest tracks/merch data before checking ownership
+    await loadEverything();
+
+    // Give the toast a moment, then go to Library and auto-load
     setTimeout(() => {
       goToPage("library");
 
-      // Pre-fill phone number (already saved before payment)
       setTimeout(() => {
         const phoneInput = document.getElementById("library-phone");
         if (phoneInput && fanPhone) {
           phoneInput.value = fanPhone;
         }
-        // Auto-load their library so downloads appear immediately
-        const loadBtn = document.getElementById("library-load-btn");
-        if (loadBtn && fanPhone) {
-          loadMyLibrary();
-        }
-      }, 400);
-    }, 1200);
+        loadMyLibrary();
+      }, 350);
+    }, 900);
 
     return true;
   }
@@ -568,6 +566,22 @@ async function loadMyLibrary() {
   }
 
   if (ownedTracks.length === 0 && ownedMerch.length === 0) {
+    // Show more helpful empty state with the exact phone being checked
+    const emptyMsg = document.getElementById("library-empty");
+    if (emptyMsg) {
+      emptyMsg.innerHTML = `
+        <div style="padding: 20px; text-align: center;">
+          <p style="margin-bottom: 12px;">No purchases found for <strong>${escapeHtml(phone)}</strong>.</p>
+          <p style="font-size: 0.9em; opacity: 0.85; margin-bottom: 16px;">
+            If you just paid, please wait 30–60 seconds and click "Load My Purchases" again.<br>
+            Make sure you used the <strong>exact same phone number</strong> during checkout.
+          </p>
+          <button onclick="location.reload()" style="padding: 8px 20px; border-radius: 999px; background: #6b46c1; color: white; border: none; cursor: pointer;">
+            Refresh Page
+          </button>
+        </div>
+      `;
+    }
     empty.classList.remove("hidden");
     return;
   }
