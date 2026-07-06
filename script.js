@@ -207,8 +207,7 @@ function renderCatalog(filteredTracks = null) {
     card.className = `card track-card${soldOut ? " soldout" : ""}`;
 
     const coverStyle = track.coverImageUrl 
-      ? `background-image:url(${API_BASE + track.coverImageUrl}); background-size:cover; background-position:center;` 
-      : `background:${track.coverColor}`;
+  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl});background-size:cover;background-position:center;`
 
     card.innerHTML = `
       <div class="track-cover" style="${coverStyle}"></div>
