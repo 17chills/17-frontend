@@ -562,9 +562,11 @@ async function loadMyLibrary() {
   ownedTracks.forEach(track => {
     const card = document.createElement("div");
     card.className = "card track-card";
-    const coverStyle = track.coverImageUrl 
-      ? `background-image:url(${API_BASE + track.coverImageUrl});background-size:cover;background-position:center;` 
-      : `background:${track.coverColor}`;
+
+const coverStyle = track.coverImageUrl 
+  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl});background-size:cover;background-position:center;` 
+  : `background:${track.coverColor}`;
+    
     card.innerHTML = `
       <div class="track-cover" style="${coverStyle}"></div>
       <div class="track-info">
