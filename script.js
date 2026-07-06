@@ -129,11 +129,16 @@ function togglePlay(track) {
   if (playingId === track.id) { stopPlayback(); return; }
   stopPlayback();
 
-  if (track.streamUrl) {
-    audioEl = new Audio(API_BASE + track.streamUrl);
-    audioEl.play().catch(() => showToast("Preview couldn't play."));
-    audioEl.onended = () => { playingId = null; document.getElementById("vinyl-disc").classList.remove("spinning"); renderCatalog(); };
-  } else {
+ if (track.streamUrl) {
+  // Fix: Use full Cloudinary URL directly if it starts with http, otherwise prepend backend URL
+  const audioSrc = track.streamUrl.startsWith('http') 
+    ? track.streamUrl 
+    : API_BASE + track.streamUrl;
+
+  audioEl = new Audio(audioSrc);
+  audioEl.play().catch(() => showToast("Preview couldn't play."));
+  audioEl.onended = () => { playingId = null; document.getElementById("vinyl-disc").classList.remove("spinning"); renderCatalog(); };
+} else {
     // Fallback tone
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
