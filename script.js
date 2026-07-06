@@ -564,7 +564,7 @@ async function loadMyLibrary() {
     card.className = "card track-card";
 
 const coverStyle = track.coverImageUrl 
-  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl});background-size:cover;background-position:center;` 
+  ? `background-image:url(${track.coverImageUrl.startsWith('http') ? track.coverImageUrl : API_BASE + track.coverImageUrl}); background-size:cover; background-position:center;` 
   : `background:${track.coverColor}`;
     
     card.innerHTML = `
