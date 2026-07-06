@@ -117,15 +117,44 @@ function renderHeroBio() {
 }
 
 // Download a purchased track
-function downloadTrack(track) {
+async function downloadTrack(track) {
   if (!track.streamUrl) { showToast("No audio file available for this track yet."); return; }
-  const a = document.createElement("a");
-  a.href = getAssetUrl(track.streamUrl);
-  a.download = (track.title || "track") + ".mp3";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  showToast(`Downloading "${track.title}"...`);
+
+  const url = getAssetUrl(track.streamUrl);
+  showToast(`Preparing "${track.title}"...`);
+
+  try {
+    // Fetch the file as a blob first. This is required because the `download`
+    // attribute is ignored by browsers for cross-origin URLs (e.g. Cloudinary) —
+    // without this, clicking "download" just opens/plays the file in a new tab
+    // instead of saving it to the device. Fetching it into a blob makes the
+    // resulting URL same-origin (blob:), so the browser is forced to save it.
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to fetch audio file");
+    const blob = await res.blob();
+
+    const blobUrl = URL.createObjectURL(blob);
+    const safeTitle = (track.title || "track").replace(/[\\/:*?"<>|]+/g, "").trim() || "track";
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = safeTitle + ".mp3";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    // Release the blob from memory shortly after the download starts
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+    showToast(`"${track.title}" downloaded to your device`);
+  } catch (e) {
+    console.error(e);
+    // Fallback: at least let the person get to the file if the blob fetch fails
+    // (e.g. CORS blocked on the storage host) — opens in a new tab so they can
+    // long-press/save manually rather than getting nothing at all.
+    showToast("Direct download failed — opening the file so you can save it manually.");
+    window.open(url, "_blank");
+  }
 }
 
 // Preview audio
